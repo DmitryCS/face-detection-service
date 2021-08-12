@@ -10,16 +10,24 @@ from db.queries.video_queries import update_status_video_by_id, update_video_dat
     get_video_by_id
 
 
-def detect_new_video(session: DBSession, vid: int, path_to_video, path_to_save_video):
+def remove_video(path_to_video: str):
+    try:
+        os.remove(path_to_video)
+    except FileNotFoundError:
+        pass    # print('Error: video does not exist')
+
+
+def detect_new_video(session: DBSession, vid: int, path_to_video, path_to_save_video, rm_files: bool = True):
     update_status_video_by_id(session=session, vid=vid, status='processing')
     face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
     video = cv2.VideoCapture(path_to_video)
     num_frames = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
-    fps = int(video.get(cv2.CAP_PROP_FPS))
-    width = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
-    height = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    output_file = cv2.VideoWriter(path_to_save_video, fourcc, fps, (width, height), True)
+    if not rm_files:
+        fps = int(video.get(cv2.CAP_PROP_FPS))
+        width = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
+        height = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        fourcc = cv2.VideoWriter_fourcc(*'XVID')
+        output_file = cv2.VideoWriter(path_to_save_video, fourcc, fps, (width, height), True)
     num_faces = 0
     for i in range(num_frames):
         _, img = video.read()
@@ -28,16 +36,23 @@ def detect_new_video(session: DBSession, vid: int, path_to_video, path_to_save_v
         num_faces = max(num_faces, len(faces))
         for (x, y, w, h) in faces:
             cv2.rectangle(img, (x, y), (x+w, y+h), (255, 0, 0), 2)
-            output_file.write(img)
+            if not rm_files:
+                output_file.write(img)
         cur_progress = i * 100 // num_frames
         update_video_data_by_id(session, vid, cur_progress, num_faces)
         db_video = get_video_by_id(session, vid)
         if db_video and db_video.status == 'canceled':
+            video.release()
+            remove_video(path_to_video)
+            session.close_session()
             return None
     video.release()
-    output_file.release()
+    if not rm_files:
+        output_file.release()
     update_video_data_by_id(session, vid, 100, num_faces, 'completed')
     session.close_session()
+    if rm_files:
+        remove_video(path_to_video)
 
 
 def main_predict_video():
