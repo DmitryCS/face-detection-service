@@ -1,1 +1,3 @@
 from .health import HealthEndpoint
+from .process_video.process_video import ProcessingVideoEndpoint
+from .process_video.cancel_video import CancelProcessingVideoEndpoint

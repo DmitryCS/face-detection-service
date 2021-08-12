@@ -5,3 +5,5 @@ __pycache__
 /venv/
 .idea
 db.sqlite
+raw
+raw_videos
