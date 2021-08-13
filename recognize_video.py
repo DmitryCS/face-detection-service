@@ -31,6 +31,8 @@ def detect_new_video(session: DBSession, vid: int, path_to_video, path_to_save_v
     num_faces = 0
     for i in range(num_frames):
         _, img = video.read()
+        if img is None:
+            continue
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         faces = face_cascade.detectMultiScale(gray, 1.3, 5)
         num_faces = max(num_faces, len(faces))
@@ -50,7 +52,6 @@ def detect_new_video(session: DBSession, vid: int, path_to_video, path_to_save_v
     if not rm_files:
         output_file.release()
     update_video_data_by_id(session, vid, 100, num_faces, 'completed')
-    session.close_session()
     if rm_files:
         remove_video(path_to_video)
 

@@ -13,6 +13,7 @@ Clone the repository. In the terminal execute `pip3 install -r requierements.txt
 1. Example of <i>processing</i> and <i>waiting</i> videos:<br>
 ![Screenshot from 2021-08-13 00-33-01_crop](https://user-images.githubusercontent.com/46371199/129261035-b003b096-9f48-4f32-ae2c-0f4565283475.png) <br>
 2. Example of <i>canceled</i> and <i>completed</i> videos:<br>
-![Screenshot from 2021-08-13 00-36-45_crop3](https://user-images.githubusercontent.com/46371199/129262778-272cd38b-61e0-4f35-949e-0568ccbd9467.png)
+![Screenshot from 2021-08-13 00-36-45_crop3](https://user-images.githubusercontent.com/46371199/129262778-272cd38b-61e0-4f35-949e-0568ccbd9467.png) <br>
+   Command to kill processes on local machine (port 8000): `sudo kill $(lsof -t -i :8000)` 
 
 

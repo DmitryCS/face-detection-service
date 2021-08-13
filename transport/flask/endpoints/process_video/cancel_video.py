@@ -14,4 +14,4 @@ class CancelProcessingVideoEndpoint(BaseEndpoint):
             cancel_video_processing(session, int(vid))
             return self.make_response_json(status=200)
         else:
-            return self.make_response_json(body={'error': str(vid)}, status=200)
+            return self.make_response_json(body={'error': str(vid)}, status=400)

@@ -7,6 +7,7 @@ from db.database import DBSession
 from db.queries import video_queries
 from db.queries.video_queries import get_videos
 from transport.flask.endpoints.base import BaseEndpoint
+from transport.flask.exceptions import FlaskRequestValidationException
 
 
 class ProcessingVideoEndpoint(BaseEndpoint):
@@ -34,7 +35,10 @@ class ProcessingVideoEndpoint(BaseEndpoint):
     ) -> Response:
         if not os.path.exists('raw_videos'):
             os.makedirs('raw_videos')
-        video = request.files['video']
+        try:
+            video = request.files['video']
+        except:
+            raise FlaskRequestValidationException("File with key 'video' not transferred")
         video_name = '.'.join([str(uuid.uuid4()), video.filename.split('.')[-1]])
         path_to_video = os.path.join('raw_videos', video_name)
         video.save(path_to_video)
