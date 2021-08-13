@@ -4,7 +4,7 @@ RUN DEBIAN_FRONTEND="noninteractive" apt install -y libgl1-mesa-glx libgtk2.0-de
 RUN apt install -y python3-pip python3-dev build-essential
 COPY . /app
 WORKDIR /app
-RUN pip install -r requirements.txt
+RUN pip3 install -r requirements.txt
 RUN alembic upgrade head
 ENTRYPOINT ["python3"]
 CMD ["main.py"]
